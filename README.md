@@ -96,6 +96,12 @@ node src/scripts/addressTableManager.js
 - 💡 建议使用私有 RPC 节点
 - 📊 关注滑点设置以控制风险
 
+ ## 技术支持 
+- 如遇问题请提交Issue
+- 欢迎提交Pull Request改进代码
+- 交流群：[Buff社区](https://t.me/chainbuff)
+- 交流群：[乌托邦社区](https://t.me/xiaojiucaiPC)
+
 ## 免责声明
 
 本项目仅供学习研究使用，使用本项目进行的任何操作造成的损失均与作者无关。在使用本项目前，请确保您已经充分了解相关风险。
