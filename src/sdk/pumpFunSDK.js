@@ -69,26 +69,25 @@ class PumpFunSDK {
       .signers([mint])
       .transaction();
   }
-  // 购买代币
-  async getBuyInstructionsBySolAmount(buyer, mint, buyAmountSol, slippageBasisPoints = 500n, commitment = DEFAULT_COMMITMENT) {
-    // 获取与指定 mint 地址关联的绑定曲线账户信息
-    // let bondingCurveAccount = await this.getBondingCurveAccount(mint, commitment);
-
-    // // 如果没有找到绑定曲线账户，抛出错误
-    // if (!bondingCurveAccount) {
-    //   throw new Error(`未找到绑定曲线账户: ${mint.toBase58()}`); // 错误信息中包含 mint 地址
-    // }
-    const globalAccount = await this.getGlobalAccount(commitment);
-    const buyAmount = globalAccount.getInitialBuyPrice(buyAmountSol);
-    let buyAmountWithSlippage = calculateWithSlippageBuy(buyAmountSol, slippageBasisPoints);
-    return await this.getBuyInstructions(
+///////////////// 动态滑点修改: 买入时影响代币数量 /////////////////
+async getBuyInstructionsBySolAmount(buyer, mint, buyAmountSol, slippageBasisPoints = 500n, commitment = DEFAULT_COMMITMENT) {
+  const globalAccount = await this.getGlobalAccount(commitment);
+  // 计算预期获得的代币数量
+  const expectedTokenAmount = globalAccount.getInitialBuyPrice(buyAmountSol);
+  
+  // 计算考虑滑点后的最小代币数量
+  let minTokenAmount = calculateTokenSlippage(expectedTokenAmount, slippageBasisPoints);
+  
+  return await this.getBuyInstructions(
       buyer,
       mint,
       globalAccount.feeRecipient,
-      buyAmount,
-      buyAmountWithSlippage
-    );
-  }
+      minTokenAmount,  // 使用计算后的最小代币数量
+      buyAmountSol
+  );
+}
+///////////////////////////////////////////////////////////////////////////
+
 
   // 获取购买指令
   async getBuyInstructions(buyer, mint, feeRecipient, amount, solAmount, commitment = DEFAULT_COMMITMENT) {
@@ -235,10 +234,12 @@ const calculateWithSlippageBuy = (amount, basisPoints) => {
   return amount + (amount * basisPoints) / 10000n;
 };
 // 计算出售时的滑点
-const calculateWithSlippageSell = (amount, basisPoints) => {
-  return amount - (amount * basisPoints) / 10000n;
+///////////////// 动态滑点修改: 卖出时影响SOL数量 /////////////////
+const calculateWithSlippageSell = (solAmount, basisPoints) => {
+  // SOL数量减去滑点
+  return solAmount - (solAmount * basisPoints) / 10000n;
 };
-
+///////////////////////////////////////////////////////////////////////////
 const getComputeUnitsSimulation = async (connection, tx, payer, threshold) => {
   threshold = threshold || 1.05; // 增加0.05的阈值
   const testInstructions = [ComputeBudgetProgram.setComputeUnitLimit({ units: 1_400_000 }), ...tx.instructions];
@@ -593,6 +594,13 @@ class AMM {
     return sol_received < this.realSolReserves ? sol_received : this.realSolReserves;
   }
 }
+///////////////// 动态滑点修改: 新增代币滑点计算函数 /////////////////
+// 代币滑点计算函数
+const calculateTokenSlippage = (tokenAmount, basisPoints) => {
+  // 代币数量减去滑点
+  return tokenAmount - (tokenAmount * basisPoints) / 10000n;
+};
+///////////////////////////////////////////////////////////////////////////
 
 module.exports = {
   PumpFunSDK,

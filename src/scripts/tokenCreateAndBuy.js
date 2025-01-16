@@ -64,7 +64,7 @@ async function uploadImage() {
         );
 
         if (imageFiles.length === 0) {
-            console.log("在 img 文件夹中没有找到���效的图片文件");
+            console.log("在 img 文件夹中没有找到效的图片文件");
             return;
         }
 
@@ -208,31 +208,27 @@ const init = async () => {
         const chunk = walletChunks[chunkIndex];
         console.log("处理第", chunkIndex + 1, "批钱包");
         let chunkTx = new Transaction();
+        
         for (let i = 0; i < chunk.length; i++) {
-
             const keypair = chunk[i];
-            // 随机一个 10 到 25 之间的百分比
-            const randomPercent = getRandomInRange(10, 25);
-
-            //（例如：买入金额 ± 随机百分比）
-            const buyAmountSolWithRandom = buyAmountSol / BigInt(100) * BigInt(randomPercent % 2 ? (100 + randomPercent) : (100 - randomPercent));
-
-            console.log(buyAmountSolWithRandom);
+            
+        ///////////////// 动态滑点修改: 移除随机买入金额,改用动态滑点 /////////////////
+        // 根据批次和位置计算动态滑点
+        const dynamicSlippage = calculateDynamicSlippage(chunkIndex, i, walletChunks.length);
+        const buyAmountSolWithRandom = buyAmountSol;  // 固定买入金额
+        ///////////////////////////////////////////////////////////////////////////
             
             const instruction = await sdk.getBuyInstructionsBySolAmount(
-                keypair.publicKey,                        // 购买者的地址
-                mint.publicKey,                           // 目标代币的mint地址
-                buyAmountSolWithRandom,                   // 购买所需的SOL数量
-                SLIPPAGE_BASIS_POINTS,                    // 允许的最大滑点为 5%
-                'confirmed'                               // 确认级别为 confirmed
+                keypair.publicKey,
+                mint.publicKey,
+                buyAmountSolWithRandom,
+                dynamicSlippage,  // 使用动态滑点
+                'confirmed'
             );
             
             instruction.instructions.forEach((instruction) => {
-
                 chunkTx.add(instruction);
             });
-
-
         }
 
         const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({ units: 1_000_000 });
@@ -313,5 +309,18 @@ const init = async () => {
         }
     }
 };
+
+///////////////// 动态滑点修改: 更新滑点百分比 /////////////////
+function calculateDynamicSlippage(chunkIndex, positionInChunk, totalChunks) {
+    // 基础滑点 1000%
+    const baseSlippage = 10000n;
+    // 每批次增加 100% 的滑点
+    const chunkSlippage = BigInt(chunkIndex * 1000);
+    // 每个位置增加 50% 的滑点
+    const positionSlippage = BigInt(positionInChunk * 500);
+    
+    return baseSlippage + chunkSlippage + positionSlippage;
+}
+///////////////////////////////////////////////////////////////////////////
 
 init();

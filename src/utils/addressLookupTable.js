@@ -48,7 +48,7 @@ async function createAddressLookupTable(connection, wallet) {
     }
 }
 
-// 向查找���添加地址
+// 向查找表添加地址
 async function extendAddressLookupTable(connection, wallet, lookupTableAddress, publicKeys) { 
     const extendLookupTableInst = AddressLookupTableProgram.extendLookupTable({
         authority: wallet.publicKey, 

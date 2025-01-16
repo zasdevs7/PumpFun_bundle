@@ -117,32 +117,28 @@ const init = async () => {
     for (let chunkIndex = 0; chunkIndex < walletChunks.length; chunkIndex++) {
         const chunk = walletChunks[chunkIndex];
         let chunkTx = new Transaction();
+        
         for (let i = 0; i < chunk.length; i++) {
             const keypair = chunk[i];
-            // 查询代币
+            
+        ///////////////// 动态滑点修改: 添加动态滑点计算 /////////////////
+        // 计算动态滑点 - 越后面卖出的滑点越大
+        const dynamicSlippage = calculateDynamicSlippage(chunkIndex, i, walletChunks.length);
+        ///////////////////////////////////////////////////////////////////////////
+            
+            // 查询代币余额
             const tokenAta = await getAssociatedTokenAddress(mint, keypair.publicKey);
-            // 获取代币账户余额信息
             const tokenBalInfo = await connection.getTokenAccountBalance(tokenAta);
-            if (!tokenBalInfo) {
-                console.log('余额不正确');
-                return null;
-            }
-
             const tokenBalance = BigInt(tokenBalInfo.value.amount);
-            // console.log('当前代币数量: ', tokenBalInfo.value.uiAmount);
-
-            // const bondingCurveAccount = await sdk.getBondingCurveAccount(mint, "confirmed");
-            // const buyAmount = bondingCurveAccount.getSellPrice(tokenBalance, SLIPPAGE_BASIS_POINTS);  // 计算购买价格
-
-            // console.log("计算出售预计价格sol余额: ", Number(buyAmount) / 1e9);
-
+            
             const instruction = await sdk.getSellInstructionsByTokenAmount(
-                keypair.publicKey,                        // 购买者的地址
-                mint,                                     // 目标代币的mint地址
-                tokenBalance,                             // 购买所需的代币数量
-                SLIPPAGE_BASIS_POINTS,                    // 允许的最大滑点为 5%
-                'confirmed'                               // 确认级别为 confirmed
+                keypair.publicKey,
+                mint,
+                tokenBalance,
+                dynamicSlippage,  // 使用动态滑点
+                'confirmed'
             );
+            
             chunkTx.add(instruction);
         }
 
@@ -262,5 +258,18 @@ const init = async () => {
 
 
 };
+
+///////////////// 动态滑点修改: 更新滑点百分比 /////////////////
+function calculateDynamicSlippage(chunkIndex, positionInChunk, totalChunks) {
+    // 基础滑点 1000%
+    const baseSlippage = 10000n;
+    // 每批次增加 100% 的滑点
+    const chunkSlippage = BigInt(chunkIndex * 1000);
+    // 每个位置增加 50% 的滑点
+    const positionSlippage = BigInt(positionInChunk * 500);
+    
+    return baseSlippage + chunkSlippage + positionSlippage;
+}
+///////////////////////////////////////////////////////////////////////////
 
 init();
