@@ -100,7 +100,6 @@ node src/scripts/addressTableManager.js
 - 如遇问题请提交Issue
 - 欢迎提交Pull Request改进代码
 - 交流群：[Buff社区](https://t.me/chainbuff)
-- 交流群：[乌托邦社区](https://t.me/xiaojiucaiPC)
 
 ## 免责声明
 
