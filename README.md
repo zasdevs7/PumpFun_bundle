@@ -1,107 +1,111 @@
 # PumpFun_bundle
 
-基于 Solana 区块链的Pumpfun多钱包捆绑交易，支持代币创建、捆绑买卖和地址表优化的方法。
+Pumpfun multi-wallet bundle transaction based on Solana blockchain, supporting token creation, bundled buying and selling, and address table optimization methods.
 
-## 功能特点
+## Features
 
-- 🪙 代币创建：支持自定义代币名称、符号和图片
-- 💰 捆绑交易：支持21个钱包捆绑买卖操作
-- 📊 地址优化：集成地址查找表(ALT)降低交易费用
-- ⚡ MEV保护：集成 Jito MEV-Boost 提高交易成功率
-- 🔄 自动化：全自动化的交易流程
-- 🛡️ 滑点保护：内置滑点保护机制
+- 🪙 Token creation: support custom token names, symbols and images
 
-## 项目结构
+- 💰 Bundled transactions: support 21 wallet bundled buying and selling operations
+
+- 📊 Address optimization: integrated address lookup table (ALT) to reduce transaction fees
+
+- ⚡ MEV protection: integrated Jito MEV-Boost to improve transaction success rate
+
+- 🔄 Automation: fully automated transaction process
+
+- 🛡️ Slippage protection: built-in slippage protection mechanism
+
+## Project structure
 
 ```
 PumpFun_bundle/
-├── src/                    # 源代码目录
-│   ├── sdk/               # SDK核心实现
-│   │   └── pumpFunSDK.js  # Pump Fun协议的SDK实现
-│   ├── utils/             # 工具函数
-│   │   └── addressLookupTable.js  # 地址查找表工具
-│   ├── scripts/           # 执行脚本
-│   │   ├── tokenCreateAndBuy.js   # 创建和购买代币
-│   │   ├── tokenSell.js           # 出售代币
-│   │   └── addressTableManager.js  # 地址表管理
-│   └── IDL/               # 接口定义
-│       ├── pumpFunProtocol.json   # 协议接口定义
-│       └── protocolExport.js      # 导出接口
-└── config/                # 配置文件目录
-    ├── img/              # 代币图片目录
-    ├── walletKeys.txt    # 钱包私钥文件
-    └── lookupTable.txt   # 地址查找表配置
+├── src/ # Source code directory
+│ ├── sdk/ # SDK core implementation
+│ │ └── pumpFunSDK.js # SDK implementation of Pump Fun protocol
+│ ├── utils/ # Tool function
+│ │ └── addressLookupTable.js # Address lookup table tool
+│ ├── scripts/ # Execute script
+│ │ ├── tokenCreateAndBuy.js # Create and buy tokens
+│ │ ├── tokenSell.js # Sell tokens
+│ │ └── addressTableManager.js # Address table management
+│ └── IDL/ # Interface definition
+│ ├── pumpFunProtocol.json # Protocol interface definition
+│ └── protocolExport.js # Export interface
+└── config/ # Configuration file directory
+├── img/ # Token image directory
+├── walletKeys.txt # Wallet private key file
+└── lookupTable.txt # Address lookup table configuration
 ```
 
-## 安装说明
+## Installation instructions
 
-1. 克隆项目
+1. Clone the project
 ```
 git clone https://github.com/your-repo/PumpFun_bundle.git
 ```
 
-2. 安装依赖
+2. Install dependencies
 ```
 npm install
 ```
 
-3. 配置钱包私钥和地址查找表
+3. Configure wallet private key and address lookup table
 ```
-创建配置目录
+Create configuration directory
 mkdir -p config/img
-添加私钥文件
+Add private key file
 touch config/walletKeys.txt
-添加代币图片
+Add token image
 cp your_token_image.png config/img/
 ```
 
-## 使用说明
- 
- 1.创建和购买代币
+## Instructions
+
+1. Create and buy tokens
 ```
 node src/scripts/tokenCreateAndBuy.js
 ```
 
-2.出售代币
+2. Sell tokens
 ```
 node src/scripts/tokenSell.js
 ```
 
-3.地址表管理
+3. Address table management
 ```
 node src/scripts/addressTableManager.js
 ```
 
-## 配置说明
+## Configuration instructions
 
-1. 钱包私钥：config/walletKeys.txt
+1. Wallet private key: config/walletKeys.txt
 ```
-[钱包1私钥]
+[Wallet 1 private key]
 …………………………
-[钱包20私钥]
+[Wallet 20 private key]
 ```
 
-2. 代币图片
-- 将代币图片放入 `config/img/` 目录
-- 支持 jpg、jpeg、png、gif 格式
+2. Token image
+- Put the token image in the `config/img/` directory
+- Support jpg, jpeg, png, gif formats
 
-3. RPC配置
-- 在脚本中设置 RPC 节点地址
-- 建议使用私有 RPC 节点以提高性能
+3. RPC configuration
+- Set the RPC node address in the script
+- It is recommended to use a private RPC node to improve performance
 
-## 注意事项
+## Notes
 
-- ⚠️ 请妥善保管私钥文件
-- 🔒 建议使用独立的交易钱包
-- 💡 建议使用私有 RPC 节点
-- 📊 关注滑点设置以控制风险
+- ⚠️ Please keep the private key file properly
+- 🔒 It is recommended to use an independent trading wallet
+- 💡 It is recommended to use a private RPC node
+- 📊 Pay attention to the slippage setting to control risks
 
- ## 技术支持 
-- 如遇问题请提交Issue
-- 欢迎提交Pull Request改进代码
-- 交流群：[Buff社区](https://t.me/chainbuff)
+## Technical support
+- If you encounter any problems, please submit an Issue
+- Welcome to submit a Pull Request to improve the code
+- Communication group: [Buff Community](https://t.me/chainbuff)
 
-## 免责声明
+## Disclaimer
 
-本项目仅供学习研究使用，使用本项目进行的任何操作造成的损失均与作者无关。在使用本项目前，请确保您已经充分了解相关风险。
-
+This project is for learning and research only. Any losses caused by using this project have nothing to do with the author. Before using this project, please make sure you have fully understood the relevant risks.
